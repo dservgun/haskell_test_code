@@ -610,3 +610,6 @@ If you're converting to/from XML, then the <hoogle>HXT</hoogle> toolbox includes
 
 [Discuss](https://plus.google.com/100162554869434148021/posts/QLaGuo8Sy9m) this tutorial in the FP Complete Google+ Community.
 
+=======
+haskell_test_code
+=================
