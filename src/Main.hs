@@ -37,7 +37,10 @@ process = arrIO print
 handleError = getAttrValue a_source >>> arrIO (putStrLn . ("Error in document: " ++))
 
 main :: IO ()
-main = do
+mainXML = do
   runX $ readDocument [withRelaxNG "transactions.rng"] "transactions.xml"
          >>> ((select >>> transform >>> process) `orElse` handleError)
   return ()
+
+main = do
+    putStrLn "Hello world"
