@@ -1,10 +1,15 @@
 module-template: ! 'module MODULE_NAME where
 
 '
-extensions: {}
+extensions:
+  TemplateHaskell: true
+  Arrows: true
 environment: ghc-7.4.2-unstable
 cabal-file: project.cabal
+hidden-packages: ''
 modules:
+  FYComputations:
+    filename: src/FYComputations.hs
   Main(src/Main.hs):
     filename: src/Main.hs
 version: 1

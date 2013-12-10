@@ -1,3 +1,4 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE Arrows #-}
 -- This template is documented more completely in the tutorial at
 -- https://www.fpcomplete.com/school/advanced-haskell-1/xml-parsing-with-validation
@@ -8,6 +9,12 @@ import Text.XML.HXT.Core
 import Text.XML.HXT.RelaxNG
 import Data.Fixed (Centi)
 import Data.Text (Text, pack)
+import Control.Monad(forM)
+import System.Directory (doesDirectoryExist, getDirectoryContents)
+import System.FilePath ((</>))
+import Test.QuickCheck
+import FYComputations
+
 
 
 type Comment = Maybe Text
@@ -42,5 +49,23 @@ mainXML = do
          >>> ((select >>> transform >>> process) `orElse` handleError)
   return ()
 
-main = do
-    putStrLn "Hello world"
+getRecursiveContents :: FilePath -> IO [FilePath]
+getRecursiveContents topdir = do
+    names <- getDirectoryContents topdir
+    let properNames = filter (`notElem` [".", ".."]) names
+    paths <- forM properNames $ \name -> do
+                let path = topdir </> name
+                isDirectory <- doesDirectoryExist path
+                if isDirectory
+                    then getRecursiveContents path
+                else
+                    return [path]
+    return (concat paths)
+    
+    
+filepathToAction f = putStrLn (show f)
+list2Actions  = map filepathToAction 
+runall [] = return ()
+runall (h:tail) = h >> (runall tail)
+
+main = putStrLn "Hello world"
