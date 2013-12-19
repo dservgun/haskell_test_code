@@ -6,5 +6,9 @@
 module Main where
 import State
 import Supply
+import System.Random
+import Control.Monad
+import Control.Monad.State
 
-main = rand >>= \x -> putStr (show x)
+
+main = rand
