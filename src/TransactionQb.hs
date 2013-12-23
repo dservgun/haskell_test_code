@@ -78,3 +78,12 @@ allBankingTransactions aList = filter (filterT proto) aList
 salesRefund = Sales Refund          
 createTransaction :: TransactionType -> Date -> Number -> Name -> Amount -> Transaction
 createTransaction aType aDate aNumber aName anAmount = Transaction aType aDate aNumber aName anAmount
+
+totalSales :: Journal -> Transaction
+totalSales [] = Transaction (Sales Refund) dateFromToday dummyNumber prototype dummyAmount
+totalSales aJournal = Transaction (Sales Refund) dateFromToday dummyNumber prototype dummyAmount
+
+addTransaction:: Transaction -> Transaction -> Transaction
+addTransaction (Transaction aType a b c anAmount) (Transaction anotherType _ _ _ anotherAmount) 
+         | aType == anotherType = (Transaction aType a b c (anAmount + anotherAmount))
+         
