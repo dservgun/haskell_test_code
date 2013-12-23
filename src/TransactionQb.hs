@@ -15,6 +15,7 @@ module TransactionQb
 where
 import Data.Text (Text)
 import Data.Time
+import Data.Maybe
 
 data Date = UTCTime
     deriving (Eq, Ord, Show, Read)
@@ -49,41 +50,53 @@ data BankAccountType = CheckingAccount InterestRate | SavingsAccount InterestRat
     deriving (Eq, Ord, Show, Read)
 data Bank = Bank Name ABA BankAccountType AccountNumber
     deriving (Eq, Ord, Show, Read)
-type Journal = [Transaction]
+type Journal = [Maybe Transaction]
 
 dateFromToday = (read "2013-12-23")
 dummyNumber = read "12.3"
 dummyAmount = read "12.3"
 
 prototype = "Prototype"
-filterT (Transaction aType _ _ _ _ )(Transaction anotherType _ _ _ _) =
+filterT :: Maybe Transaction -> Maybe Transaction -> Bool
+filterT (Just (Transaction aType _ _ _ _ )) (Just(Transaction anotherType _ _ _ _)) =
       aType == anotherType
+filterT Nothing (Just t) = False
+filterT (Just t) Nothing = False
+
 allSales :: Journal -> Journal
 allSales [] = []
 allSales aList 
     = filter (filterT proto) aList
-        where proto = Transaction (Sales Refund) dateFromToday dummyNumber prototype dummyAmount
+        where proto = Just (Transaction (Sales Refund) dateFromToday dummyNumber prototype dummyAmount)
+
 
 
 allPurchases:: Journal -> Journal
 allPurchases [] = []
 allPurchases aList     = filter (filterT proto) aList
-        where proto = Transaction (Purchase Expenses) dateFromToday dummyNumber prototype dummyAmount
+        where proto = Just (Transaction (Purchase Expenses) dateFromToday dummyNumber prototype dummyAmount)
 
 allBankingTransactions :: Journal -> Journal
 allBankingTransactions [] = []
 allBankingTransactions aList = filter (filterT proto) aList
-    where proto = Transaction (Banking JournalEntry) dateFromToday dummyNumber prototype dummyAmount              
+    where proto = Just (Transaction (Banking JournalEntry) dateFromToday dummyNumber prototype dummyAmount)
 
 salesRefund = Sales Refund          
 createTransaction :: TransactionType -> Date -> Number -> Name -> Amount -> Transaction
 createTransaction aType aDate aNumber aName anAmount = Transaction aType aDate aNumber aName anAmount
 
-totalSales :: Journal -> Transaction
-totalSales [] = Transaction (Sales Refund) dateFromToday dummyNumber prototype dummyAmount
-totalSales aJournal = Transaction (Sales Refund) dateFromToday dummyNumber prototype dummyAmount
+totalSales :: Journal -> Maybe Transaction
+totalSales [] = Nothing
+totalSales aJournal = foldr (addTransaction) Nothing aJournal
 
-addTransaction:: Transaction -> Transaction -> Transaction
-addTransaction (Transaction aType a b c anAmount) (Transaction anotherType _ _ _ anotherAmount) 
-         | aType == anotherType = (Transaction aType a b c (anAmount + anotherAmount))
+addTransaction:: Maybe Transaction -> Maybe Transaction -> Maybe Transaction
+addTransaction Nothing Nothing = Nothing
+addTransaction a Nothing = a
+addTransaction Nothing a = a
+-- The values a b and c are place holders..we are losing the date for the transaction in this
+-- example. Not sure if this will work.
+addTransaction (Just (Transaction aType a b c anAmount)) (Just (Transaction anotherType _ _ _ anotherAmount))
+    | aType == anotherType = Just (Transaction aType a b c (anAmount + anotherAmount))
+
+         
          
