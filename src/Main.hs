@@ -1,5 +1,4 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE Arrows #-}
 -- This template is documented more completely in the tutorial at
 -- https://www.fpcomplete.com/school/advanced-haskell-1/xml-parsing-with-validation
 

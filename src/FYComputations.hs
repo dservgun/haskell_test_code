@@ -31,8 +31,8 @@ getUTCTime anInt = anInt
 instance Arbitrary Year where
     arbitrary = do
         utcTime <- choose (0, 2000) :: Gen Int
-        return (FiscalYear{startDate = getUTCTime(utcTime), 
-        endDate = getUTCTime(utcTime), state = Closed})        
+        return FiscalYear{startDate = getUTCTime utcTime, 
+        endDate = getUTCTime utcTime, state = Closed}        
     
 data FYPeriod = FiscalYearPeriod {
     period ::Year,
@@ -45,12 +45,12 @@ instance Arbitrary FYPeriod where
     arbitrary = do
         utcTime <- choose (0, 2000) :: Gen Int
         let {computedDate = getUTCTime utcTime}
-        return (FiscalYearPeriod{
-            period = (FiscalYear{startDate = computedDate, endDate = computedDate, state = Closed}), 
+        return FiscalYearPeriod{
+            period = FiscalYear{startDate = computedDate, endDate = computedDate, state = Closed}, 
             periodStartDate = computedDate,
             periodEndDate = computedDate,
             periodState = Closed,
-            periodType = Standard})
+            periodType = Standard}
     
 prop_valid_annual_period :: Year -> Bool 
 prop_valid_annual_period aYear = startDate aYear < endDate aYear
@@ -60,7 +60,7 @@ prop_valid_period aFYPeriod = periodStartDate aFYPeriod < periodEndDate aFYPerio
 
 prop_fyperiod :: Year -> FYPeriod -> Bool
 prop_fyperiod aYear aPeriod = 
-    case (periodType aPeriod) of
+    case periodType aPeriod of
       Standard -> (startDate aYear >= periodStartDate aPeriod) && (endDate aYear <= periodEndDate aPeriod)
       Adjustment -> True
 
@@ -69,4 +69,6 @@ prop_fyperiods aYear []  = True
 
 
 {-foldr (&&) False (map (validFiscalPeriod aFY) [aPeriod]) -}
-prop_fyperiods aYear fyPeriods = foldr (&&) False (map (prop_fyperiod aYear) fyPeriods)
+--prop_fyperiods aYear fyPeriods = foldr (&&) False (map (prop_fyperiod aYear) fyPeriods)
+prop_fyperiods aYear fyPeriods = foldr ((&&) . prop_fyperiod aYear) False fyPeriods
+

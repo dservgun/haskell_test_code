@@ -52,7 +52,7 @@ data Bank = Bank Name ABA BankAccountType AccountNumber
     deriving (Eq, Ord, Show, Read)
 type Journal = [Maybe Transaction]
 
-dateFromToday = (read "2013-12-23")
+dateFromToday = read "2013-12-23"
 dummyNumber = read "12.3"
 dummyAmount = read "12.3"
 
@@ -105,7 +105,9 @@ addTransaction Nothing Nothing = Nothing
 addTransaction a Nothing = a
 addTransaction Nothing a = a
 -- The values a b and c are place holders..we are losing the date for the transaction in this
--- example. Not sure if this will work.
+-- example. Not sure if this will work for long. The design has 
+-- quite a few issues: the number of functions seem to multiply with the type of transactions
+-- we need to probably derive from Enum to limit the search functions??
 addTransaction (Just (Transaction aType a b c anAmount)) (Just (Transaction anotherType _ _ _ anotherAmount))
     | aType == anotherType = Just (Transaction aType a b c (anAmount + anotherAmount))
 
