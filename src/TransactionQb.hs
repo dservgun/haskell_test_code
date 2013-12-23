@@ -81,13 +81,24 @@ allBankingTransactions [] = []
 allBankingTransactions aList = filter (filterT proto) aList
     where proto = Just (Transaction (Banking JournalEntry) dateFromToday dummyNumber prototype dummyAmount)
 
-salesRefund = Sales Refund          
+salesRefund = Sales Refund
 createTransaction :: TransactionType -> Date -> Number -> Name -> Amount -> Transaction
 createTransaction aType aDate aNumber aName anAmount = Transaction aType aDate aNumber aName anAmount
 
 totalSales :: Journal -> Maybe Transaction
 totalSales [] = Nothing
-totalSales aJournal = foldr (addTransaction) Nothing aJournal
+totalSales aJournal = foldr addTransaction Nothing sales
+    where sales  = allSales aJournal
+
+totalPurchases :: Journal -> Maybe Transaction
+totalPurchases [] = Nothing
+totalPurchases aJournal = foldr addTransaction Nothing purchases
+      where purchases = allPurchases aJournal
+
+totalBankingTransactions :: Journal -> Maybe Transaction
+totalBankingTransactions [] = Nothing
+totalBankingTransactions aJournal = foldr addTransaction Nothing bankingTransactions
+    where bankingTransactions = allBankingTransactions aJournal
 
 addTransaction:: Maybe Transaction -> Maybe Transaction -> Maybe Transaction
 addTransaction Nothing Nothing = Nothing
