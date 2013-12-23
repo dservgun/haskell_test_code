@@ -9,6 +9,8 @@ import Supply
 import System.Random
 import Control.Monad
 import Control.Monad.State
+import HandleIO
+import TransactionQb
 
-
-main = rand
+testTransactions = createTransaction salesRefund  dateFromToday dummyNumber prototype dummyAmount
+main = runHandleIO (safeHello "goodbye")
