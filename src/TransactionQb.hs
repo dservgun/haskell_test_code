@@ -16,6 +16,7 @@ where
 import Data.Text (Text)
 import Data.Time
 import Data.Maybe
+import Test.QuickCheck
 
 data Date = UTCTime
     deriving (Eq, Ord, Show, Read)
@@ -111,5 +112,6 @@ addTransaction Nothing a = a
 addTransaction (Just (Transaction aType a b c anAmount)) (Just (Transaction anotherType _ _ _ anotherAmount))
     | aType == anotherType = Just (Transaction aType a b c (anAmount + anotherAmount))
 
+    
          
          
