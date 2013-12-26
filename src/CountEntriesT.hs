@@ -10,7 +10,7 @@ import System.Directory(doesDirectoryExist)
 import System.FilePath((</>))
 import Control.Monad(forM_, when)
 import Control.Monad.Trans(liftIO)
-import Control.Monad.Writer (WriterT, tell)
+import Control.Monad.Writer (WriterT, tell, runWriterT)
 
 countEntries :: FilePath -> WriterT [(FilePath, Int)] IO ()
 countEntries path = do
@@ -20,4 +20,5 @@ countEntries path = do
          let newName = path </> name
          isDir <- liftIO (doesDirectoryExist newName)
          when isDir (countEntries newName)
-         
+
+doExec aPath = runWriterT (countEntries aPath)

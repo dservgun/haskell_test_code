@@ -10,6 +10,6 @@ import Control.Monad
 import Control.Monad.State
 import HandleIO
 import TransactionQb
-
+import CountEntriesT
 testTransactions = createTransaction salesRefund  dateFromToday dummyNumber prototype dummyAmount
-main = runHandleIO (safeHello "goodbye")
+main = doExec ".."
