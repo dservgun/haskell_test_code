@@ -11,5 +11,6 @@ import Control.Monad.State
 import HandleIO
 import TransactionQb
 import CountEntriesT
+import TestHttpConduit
 testTransactions = createTransaction salesRefund  dateFromToday dummyNumber prototype dummyAmount
-main = doExec ".."
+main = runGoogle
