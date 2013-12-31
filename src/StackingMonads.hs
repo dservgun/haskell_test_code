@@ -1,9 +1,21 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module StackingMonads where
 import System.Directory
 import System.FilePath
 import Control.Monad.Reader
 import Control.Monad.State
+import Control.Monad.Writer
 import CountEntries
+
+newtype MyApp a = MyA {
+    runA :: ReaderT AppConfig (StateT AppState IO) a
+}deriving (Monad, MonadIO, MonadReader AppConfig, MonadState AppState)    
+
+runMyApp :: MyApp a -> Int -> IO (a, AppState)
+runMyApp k maxDepth =
+       let config = AppConfig maxDepth
+           state = AppState 0
+       in runStateT (runReaderT (runA k) config) state
 
 data AppConfig = AppConfig {
     cfgMaxDepth :: Int
@@ -14,13 +26,15 @@ data AppState = AppState {
 }deriving (Show)
 
 type App = ReaderT AppConfig (StateT AppState IO)
-    
+
+
 runApp :: App a -> Int -> IO (a, AppState)
 runApp k maxDepth = 
     let config = AppConfig maxDepth
         state = AppState 0
         in runStateT (runReaderT k config) state
 
+        
 constrainedCount curDepth path = do
     contents <- liftIO . listDirectory $ path
     cfg <- ask
@@ -37,4 +51,6 @@ constrainedCount curDepth path = do
                 constrainedCount newDepth newPath
         else return []
     return $ (path, length contents) : concat rest
-            
+
+
+    
