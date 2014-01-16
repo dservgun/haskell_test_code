@@ -19,7 +19,7 @@ type YAxis = Int
 data TwoDPoint = TwoDPoint XAxis YAxis
     deriving (Show, Ord, Read, Eq)
     
-data TwoDColorPoint = TwoDColorPoint XAxis YAxis Color
+data TwoDColorPoint = TwoDColorPoint TwoDPoint Color
 
 instance Num TwoDPoint where
     (TwoDPoint x1 y1) + (TwoDPoint x2 y2) = TwoDPoint (x1 + x2) (y1 + y2)
@@ -30,7 +30,7 @@ instance Num TwoDPoint where
     fromInteger i = TwoDPoint (fromIntegral i) (fromIntegral i)
 
 instance Num TwoDColorPoint where
-    (TwoDColorPoint x1 y1 c1) + (TwoDColorPoint x2 y2 c2) = TwoDColorPoint (x1 + x2) (y1 + y2) (c1 + c2)
+    (TwoDColorPoint t1 c1) + (TwoDColorPoint t2 c2) = TwoDColorPoint (t1 + t2) (c1 + c2)
     
 instance Point TwoDPoint where
     getX (TwoDPoint x _) = x
@@ -38,9 +38,9 @@ instance Point TwoDPoint where
     move p1 p2 = p1 + p2
 
 instance Point TwoDColorPoint where
-    getX (TwoDColorPoint x _ _) = x
-    getY (TwoDColorPoint _ y _) = y
+    getX (TwoDColorPoint t _) =  getX t
+    getY (TwoDColorPoint t _) = getY t
     move p1 p2 = p1 + p2    
 instance ColoredPoint TwoDColorPoint where
-    color (TwoDColorPoint _ _ c) = c
+    color (TwoDColorPoint _ c) = c
         
