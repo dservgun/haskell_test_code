@@ -1,9 +1,11 @@
 module Point where
 import Color
 class Point a where
-    getX :: a -> XAxis
-    getY :: a -> YAxis
-    move :: a -> a -> a
+    getX   :: a -> XAxis
+    getY   :: a -> YAxis
+    moveTo :: a -> a -> a
+    moveBy :: a -> a -> a
+    distance :: a -> Float
 
 class (Point a) => ColoredPoint a where
      color :: a -> Color
@@ -17,10 +19,13 @@ class (Point a) => ColoredPoint a where
 -- work on both types.
 type XAxis = Int
 type YAxis = Int
+
+origin = TwoDPoint 0 0
+
 data TwoDPoint = TwoDPoint XAxis YAxis
     deriving (Show, Ord, Read, Eq)
     
-data TwoDColorPoint = TwoDColorPoint TwoDPoint Color
+data TwoDPointWithColor = TwoDPointWithColor TwoDPoint Color
 
 instance Num TwoDPoint where
     (TwoDPoint x1 y1) + (TwoDPoint x2 y2) = TwoDPoint (x1 + x2) (y1 + y2)
@@ -29,21 +34,29 @@ instance Num TwoDPoint where
     (TwoDPoint x1 y1) * (TwoDPoint x2 y2) = TwoDPoint (x1 * x2) (y1 * y2)
     signum x = x
     fromInteger i = TwoDPoint (fromIntegral i) (fromIntegral i)
+    
 
-instance Num TwoDColorPoint where
-    (TwoDColorPoint t1 c1) + (TwoDColorPoint t2 c2) = TwoDColorPoint (t1 + t2) (c1 + c2)
-    (TwoDColorPoint t1 c1) * (TwoDColorPoint t2 c2) = TwoDColorPoint (t1 * t2) (c1 * c2)
+instance Num TwoDPointWithColor where
+    (TwoDPointWithColor t1 c1) + (TwoDPointWithColor t2 c2) = TwoDPointWithColor (t1 + t2) (c1 + c2)
+    (TwoDPointWithColor t1 c1) * (TwoDPointWithColor t2 c2) = TwoDPointWithColor (t1 * t2) (c1 * c2)
     
     
 instance Point TwoDPoint where
     getX (TwoDPoint x _) = x
     getY (TwoDPoint _ y) = y
-    move p1 p2 = p1 + p2
+    moveTo p1 p2 = p2
+    moveBy p1 p2 = p1 + p2
+    distance p1 = 
+        let 
+           hyp (TwoDPoint x y) = x^2 + y^2 in
+            sqrt $ fromIntegral $ hyp(p1 - origin)
+ 
 
-instance Point TwoDColorPoint where
-    getX (TwoDColorPoint t _) =  getX t
-    getY (TwoDColorPoint t _) = getY t
-    move p1 p2 = p1 + p2    
-instance ColoredPoint TwoDColorPoint where
-    color (TwoDColorPoint _ c) = c
+instance Point TwoDPointWithColor where
+    getX (TwoDPointWithColor t _) =  getX t
+    getY (TwoDPointWithColor t _) = getY t
+    moveTo p1 p2 = p2    
+    moveBy p1 p2 = p1 + p2
+instance ColoredPoint TwoDPointWithColor where
+    color (TwoDPointWithColor _ c) = c
         
