@@ -1,4 +1,7 @@
 module Color where
+-- Need to revisit this code, because the operations need to probably
+-- be correctly defined.
+
 type Red = Int
 type Blue = Int
 type Green = Int
@@ -9,8 +12,6 @@ type Key = Int -- Key and black are synonyms
 type Black = Int
 
 data Color = RGB (Red, Blue, Green)  | CMYK (Cyan, Magenta, Yellow, Key)
--- This file attempts to implement the point hierarchy as defined in 
--- ocaml manual.
 mod256 x = x `mod` 256
 instance Num Color where
     c1 + c2 = case (c1, c2) of
@@ -27,5 +28,5 @@ instance Num Color where
                                                          mod256 $ c * y,
                                                          mod256 $ d* z)
                 (_, _) -> error "Invalid type"
-        
-                
+
+
