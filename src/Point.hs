@@ -13,7 +13,8 @@ class (Point a) => ColoredPoint a where
 -- fromIntegral converts an Integer to Int.
 -- As we can clearly see, perhaps there is a better way to represent inheritance?
 -- or is inheritance not worth the trouble supporting.
-
+-- Issues: XAxis needs to be either Int or Integer and the points need to 
+-- work on both types.
 type XAxis = Int
 type YAxis = Int
 data TwoDPoint = TwoDPoint XAxis YAxis
