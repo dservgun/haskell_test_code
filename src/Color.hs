@@ -11,10 +11,21 @@ type Black = Int
 data Color = RGB (Red, Blue, Green)  | CMYK (Cyan, Magenta, Yellow, Key)
 -- This file attempts to implement the point hierarchy as defined in 
 -- ocaml manual.
-mod256 a b = (a + b) `mod` 256
+mod256 x = x `mod` 256
 instance Num Color where
     c1 + c2 = case (c1, c2) of
-                (RGB(a, b, c), RGB(x, y, z)) -> RGB (( mod256 a x), (mod256 b y), (mod256 c z))
-                (CMYK(a , b, c, d), CMYK(w, x, y, z)) -> CMYK((mod256 a w), (mod256 b x), (mod256 c y), (mod256 d z))
+                (RGB(a, b, c), RGB(x, y, z)) -> RGB ( mod256 $ a + x, mod256 $ b + y, mod256 $ c + z)
+                (CMYK(a , b, c, d), CMYK(w, x, y, z)) -> CMYK(mod256 $ a + w,
+                                                    mod256 $ b + x,
+                                                    mod256 $ c + y,
+                                                    mod256 $ d + z)
                 (_, _) -> error "Invalid type"
+    c1 * c2 = case (c1, c2) of
+                (RGB(a, b, c), RGB(x, y, z)) -> RGB (mod256 $ a * x, mod256 $ b * y, mod256 $ c * z)
+                (CMYK(a , b, c, d), CMYK(w, x, y, z)) -> CMYK(mod256 $ a * w,
+                                                         mod256 $ b * x,
+                                                         mod256 $ c * y,
+                                                         mod256 $ d* z)
+                (_, _) -> error "Invalid type"
+        
                 

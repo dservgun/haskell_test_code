@@ -31,6 +31,8 @@ instance Num TwoDPoint where
 
 instance Num TwoDColorPoint where
     (TwoDColorPoint t1 c1) + (TwoDColorPoint t2 c2) = TwoDColorPoint (t1 + t2) (c1 + c2)
+    (TwoDColorPoint t1 c1) * (TwoDColorPoint t2 c2) = TwoDColorPoint (t1 * t2) (c1 * c2)
+    
     
 instance Point TwoDPoint where
     getX (TwoDPoint x _) = x
