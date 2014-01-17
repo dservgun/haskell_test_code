@@ -1,9 +1,9 @@
 module Transaction where
 
-data AccountType = Asset | Liability
+data AccountType = Debit | Credit
 type Name = String
-type Amount = Int
-data Account = Account Name AccountType
+type Amount = Rational
+data Account = Account Name AccountType Amount
 data Transaction = Transaction {
     source:: Account,
     destination :: Account,
@@ -11,31 +11,14 @@ data Transaction = Transaction {
 }
 
 
-{- We want to model a double entry book keeeping system
- general ledger is a set of transactions sorted by date. 
- We want a set of functions that work on a Journal.
- Our initial motivation is to model the Journal as a monad
- allowing us to chain transactions.
- The chaining function would return the the list of transactions
- and the total liability of asset as a result of the transactions.
- This could be considered as a prototype of a simple journaling or
-event sourcing system.
--} 
+type Journal =  [Transaction]
+currentBalance (Account _ _ amount) = amount
 
-computeSnap :: Transaction -> (AccountType, Amount)
-computeSnap (Transaction (Account sName sType) (Account dName dType) amount) = 
-    if sName == dName then 
-        (Asset, 0)
-    else
-        case (sType, dType) of
-            (Asset, Liability) -> (Liability, amount)
-            (Asset, Asset)    -> (Asset, amount)
-            (Liability, Liability) -> (Liability, amount)
-            (Liability, Asset) -> (Asset, amount)
-
-computeSnapshot :: [Transaction] -> [(AccountType, Amount)]
-{- This is an issue because when there are no transactions we 
-probably need to do something meaningful.
--}
-computeSnapshot [] = [(Asset, 0)]
-computeSnapshot aList = map computeSnap aList
+valid :: Journal -> Bool
+valid aJournal = 
+        let 
+           zero = 0/10000
+           totalDebit = foldr (\t a -> a + currentBalance (source t)) zero aJournal
+           totalCredit = foldr (\t a  -> a + currentBalance (destination t)) zero aJournal
+        in
+          abs(totalCredit + totalDebit) < zero
